@@ -1,4 +1,4 @@
-module model
+module github.com/todo/libs/gomodels
 
 go 1.20
 
