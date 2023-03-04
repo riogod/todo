@@ -10,6 +10,7 @@ type ToDoItem struct {
 	ID          string `gorm:"primary_key;column:id;type:TEXT;"      json:"id"`
 	Title       string `gorm:"column:title;type:text"                json:"title"`
 	Description string `gorm:"column:description;type:text"          json:"description"`
+	Text        string `gorm:"column:text;type:text"                json:"text"`
 	Status      string `gorm:"column:status;type:text"               json:"status"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
