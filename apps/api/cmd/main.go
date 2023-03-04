@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
-
 func main() {
-	fmt.Println("test")
+	// a := ToDoItem{
+	// 	ID:          "a",
+	// 	Title:       "test",
+	// 	Description: "test desc",
+	// 	Status:      "no status",
+	// }
+	// fmt.Println("test", a)
 }
