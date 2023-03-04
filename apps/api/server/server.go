@@ -1,16 +1,21 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"time"
+	apiv1 "todo_api/internal/api/v1"
+	"todo_api/internal/di"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/samber/do"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -44,13 +49,6 @@ func NewAppInit() *App {
 		panic("Cannot loading configs from env")
 	}
 	db := initDB(*config.DatabaseConfig)
-	return &App{
-		Config: config,
-		DB:     db,
-	}
-}
-
-func (app *App) Run() {
 
 	router := gin.Default()
 	router.Use(
@@ -58,6 +56,19 @@ func (app *App) Run() {
 		gin.Logger(),
 	)
 
+	apiv1.Setup(router)
+	do.ProvideValue(di.Provider, db)
+	do.ProvideValue(di.Provider, router)
+
+	return &App{
+		Config: config,
+		DB:     db,
+	}
+}
+
+func (app *App) Run() error {
+
+	router := do.MustInvoke[*gin.Engine](di.Provider)
 	app.httpServer = &http.Server{
 		Addr:           ":" + app.Config.PORT,
 		Handler:        router,
@@ -71,6 +82,15 @@ func (app *App) Run() {
 			log.Fatalf("Failed to listen and serve: %+v", err)
 		}
 	}()
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, os.Interrupt)
+
+	<-quit
+
+	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdown()
+
+	return app.httpServer.Shutdown(ctx)
 }
 
 func readConfig() (*Config, error) {
