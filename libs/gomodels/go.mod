@@ -1,4 +1,4 @@
-module github.com/todo/libs/gomodels
+module github.com/riogod/todo/libs/gomodels
 
 go 1.20
 
