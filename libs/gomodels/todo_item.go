@@ -7,7 +7,7 @@ import (
 )
 
 type ToDoItem struct {
-	ID          string `gorm:"primary_key;column:id;type:TEXT;"      json:"id"`
+	ID          uint64 `gorm:"primary_key;column:id;"     json:"id"`
 	Title       string `gorm:"column:title;type:text"                json:"title"`
 	Description string `gorm:"column:description;type:text"          json:"description"`
 	Status      string `gorm:"column:status;type:text"               json:"status"`

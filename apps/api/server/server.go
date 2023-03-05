@@ -10,12 +10,11 @@ import (
 	"path/filepath"
 	"time"
 	apiv1 "todo_api/internal/api/v1"
-	"todo_api/internal/di"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/samber/do"
+	model "github.com/riogod/todo/libs/gomodels"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -39,6 +38,7 @@ type Config struct {
 type App struct {
 	Config     *Config
 	DB         *gorm.DB
+	Router     *gin.Engine
 	httpServer *http.Server
 }
 
@@ -56,19 +56,17 @@ func NewAppInit() *App {
 		gin.Logger(),
 	)
 
-	apiv1.Setup(router)
-	do.ProvideValue(di.Provider, db)
-	do.ProvideValue(di.Provider, router)
+	apiv1.Setup(router, db)
 
 	return &App{
 		Config: config,
 		DB:     db,
+		Router: router,
 	}
 }
 
-func (app *App) Run() error {
+func (app *App) Run(router *gin.Engine) error {
 
-	router := do.MustInvoke[*gin.Engine](di.Provider)
 	app.httpServer = &http.Server{
 		Addr:           ":" + app.Config.PORT,
 		Handler:        router,
@@ -130,6 +128,8 @@ func initDB(dbConfig DatabaseConfig) *gorm.DB {
 	if err != nil {
 		fmt.Println("error connect to database")
 	}
+
+	db.AutoMigrate(&model.ToDoItemList{})
 
 	return db
 }

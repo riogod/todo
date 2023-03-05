@@ -4,5 +4,5 @@ import "todo_api/server"
 
 func main() {
 	app := server.NewAppInit()
-	app.Run()
+	app.Run(app.Router)
 }
