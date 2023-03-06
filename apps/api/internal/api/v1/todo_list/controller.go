@@ -1,6 +1,7 @@
 package todo_list
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -9,6 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type Success struct {
+	success bool
+}
+
 func Setup(router *gin.RouterGroup, db *gorm.DB) {
 	sevice := &Service{
 		db,
@@ -16,22 +21,29 @@ func Setup(router *gin.RouterGroup, db *gorm.DB) {
 
 	todo := router.Group("/todo/list")
 	{
-		todo.GET(":id", get(sevice))
+		todo.GET("", get(sevice))
+		todo.GET(":id", getById(sevice))
 		todo.POST("", create(sevice))
-		todo.PATCH(":id", func(ctx *gin.Context) {})
-		todo.DELETE(":id", func(ctx *gin.Context) {})
+		todo.PATCH(":id", update(sevice))
+		todo.DELETE(":id", delete(sevice))
 	}
 }
 
 func get(s *Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-
-		model, _ := s.Get(id)
+		model, _ := s.GetAll()
 
 		ctx.JSON(http.StatusOK, model)
 	}
+}
 
+func getById(s *Service) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		model, _ := s.GetByID(id)
+
+		ctx.JSON(http.StatusOK, model)
+	}
 }
 
 func create(s *Service) func(ctx *gin.Context) {
@@ -43,6 +55,37 @@ func create(s *Service) func(ctx *gin.Context) {
 		}
 		s.Create(&createParams)
 		ctx.JSON(http.StatusOK, createParams)
+	}
+
+}
+
+func update(s *Service) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		var updateParams model.ToDoItemList
+		err := ctx.BindJSON(&updateParams)
+		if err != nil {
+			fmt.Println(err)
+		}
+		model, err := s.Update(id, &updateParams)
+		if err != nil {
+			fmt.Println(err)
+		}
+		ctx.JSON(http.StatusOK, model)
+	}
+
+}
+
+func delete(s *Service) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		err := s.Delete(id)
+		if err != nil {
+			fmt.Println(err)
+		}
+		ctx.JSON(http.StatusOK, Success{
+			success: true,
+		})
 	}
 
 }
