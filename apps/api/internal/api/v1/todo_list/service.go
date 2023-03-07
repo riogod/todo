@@ -39,18 +39,18 @@ func (s *Service) Create(itemModel *model.ToDoItemList) (*model.ToDoItemList, er
 }
 
 // update item in database
-func (s *Service) Update(id string, itemModel *model.ToDoItemList) (*model.ToDoItemList, error) {
+func (s *Service) Update(id string, itemModel *model.ToDoItemList) error {
 	var todoItemList model.ToDoItemList
 
 	s.db.First(&todoItemList, id)
 	if todoItemList.ID == 0 {
-		return nil, fmt.Errorf("there is no item to update with id=%v", id)
+		return fmt.Errorf("there is no item to update with id=%v", id)
 	}
 
 	itemModel.ID = todoItemList.ID
 
 	s.db.Save(&itemModel)
-	return itemModel, nil
+	return nil
 }
 
 // mark item as deleted
