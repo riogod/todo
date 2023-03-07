@@ -26,11 +26,25 @@ func Setup(router *gin.RouterGroup, db *gorm.DB) {
 
 func get(s *Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		model, _ := s.GetAll()
+		var resultMap []model.ToDoItemList
+		var responseMap []ResponseTodoListItemDTO
+		s.GetAll(&resultMap)
+
+		for _, item := range resultMap {
+			mappedItem := ResponseTodoListItemDTO{
+				ID:          fmt.Sprintf("%d", item.ID),
+				Title:       item.Title,
+				Description: item.Description,
+				Status:      item.Status,
+				CreatedAt:   item.CreatedAt,
+				UpdatedAt:   item.UpdatedAt,
+			}
+			responseMap = append(responseMap, mappedItem)
+		}
 
 		ctx.JSON(http.StatusOK, ResponseOK_DTO{
 			Success: true,
-			Body:    model,
+			Body:    responseMap,
 		})
 	}
 }

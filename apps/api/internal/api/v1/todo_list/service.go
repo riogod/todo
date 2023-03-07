@@ -12,10 +12,10 @@ type Service struct {
 }
 
 // get items list from database
-func (s *Service) GetAll() (*[]model.ToDoItemList, error) {
-	allList := []model.ToDoItemList{}
-	s.db.Find(&allList)
-	return &allList, nil
+func (s *Service) GetAll(m *[]model.ToDoItemList) error {
+
+	s.db.Find(&m)
+	return nil
 }
 
 // get item by id from database
