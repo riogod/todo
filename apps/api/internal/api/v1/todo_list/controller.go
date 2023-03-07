@@ -93,9 +93,14 @@ func create(s *db_service.Service) func(ctx *gin.Context) {
 		createParams.Status = requestParams.Status
 
 		if err != nil {
-			ctx.JSON(http.StatusOK, ResponseOK_DTO{
+			ctx.JSON(http.StatusOK, ResponseERROR_DTO{
 				Success: false,
+				Error: ResponseErrorDTO{
+					ErrorCode:    "UNABLE_TO_CREATE",
+					ErrorMessage: "Cannot insert new list item in db table",
+				},
 			})
+			return
 		}
 		createParams.ID = 0
 		s.Create(&createParams)
