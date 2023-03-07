@@ -3,6 +3,7 @@ package todo_list
 import (
 	"fmt"
 	"net/http"
+	db_service "todo_api/internal/service/db"
 
 	"github.com/gin-gonic/gin"
 	model "github.com/riogod/todo/libs/gomodels"
@@ -10,8 +11,9 @@ import (
 )
 
 func Setup(router *gin.RouterGroup, db *gorm.DB) {
-	sevice := &Service{
-		db,
+	sevice := &db_service.Service{
+
+		DB: db,
 	}
 
 	todo := router.Group("/todo/list")
@@ -24,7 +26,7 @@ func Setup(router *gin.RouterGroup, db *gorm.DB) {
 	}
 }
 
-func get(s *Service) func(ctx *gin.Context) {
+func get(s *db_service.Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var resultMap []model.ToDoItemList
 		var responseMap []ResponseTodoListItemDTO
@@ -49,7 +51,7 @@ func get(s *Service) func(ctx *gin.Context) {
 	}
 }
 
-func getById(s *Service) func(ctx *gin.Context) {
+func getById(s *db_service.Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		model, err := s.GetByID(id)
@@ -79,7 +81,7 @@ func getById(s *Service) func(ctx *gin.Context) {
 	}
 }
 
-func create(s *Service) func(ctx *gin.Context) {
+func create(s *db_service.Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var createParams model.ToDoItemList
 		var requestParams RequestTodoListDTO
@@ -112,7 +114,7 @@ func create(s *Service) func(ctx *gin.Context) {
 
 }
 
-func update(s *Service) func(ctx *gin.Context) {
+func update(s *db_service.Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		var updateParams model.ToDoItemList
@@ -154,7 +156,7 @@ func update(s *Service) func(ctx *gin.Context) {
 
 }
 
-func delete(s *Service) func(ctx *gin.Context) {
+func delete(s *db_service.Service) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
 		err := s.Delete(id)

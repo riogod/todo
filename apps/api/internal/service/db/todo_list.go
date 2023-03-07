@@ -1,4 +1,4 @@
-package todo_list
+package db_service
 
 import (
 	"fmt"
@@ -8,13 +8,13 @@ import (
 )
 
 type Service struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 // get items list from database
 func (s *Service) GetAll(m *[]model.ToDoItemList) error {
 
-	s.db.Find(&m)
+	s.DB.Find(&m)
 	return nil
 }
 
@@ -22,7 +22,7 @@ func (s *Service) GetAll(m *[]model.ToDoItemList) error {
 func (s *Service) GetByID(id string) (*model.ToDoItemList, error) {
 	var todoItemList model.ToDoItemList
 
-	s.db.First(&todoItemList, id)
+	s.DB.First(&todoItemList, id)
 	if todoItemList.ID == 0 {
 		return nil, fmt.Errorf("no item in todo list table")
 	}
@@ -31,7 +31,7 @@ func (s *Service) GetByID(id string) (*model.ToDoItemList, error) {
 
 // create new item in database
 func (s *Service) Create(itemModel *model.ToDoItemList) (*model.ToDoItemList, error) {
-	err := s.db.Create(itemModel)
+	err := s.DB.Create(itemModel)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create item in todo list table")
 	}
@@ -42,21 +42,21 @@ func (s *Service) Create(itemModel *model.ToDoItemList) (*model.ToDoItemList, er
 func (s *Service) Update(id string, itemModel *model.ToDoItemList) error {
 	var todoItemList model.ToDoItemList
 
-	s.db.First(&todoItemList, id)
+	s.DB.First(&todoItemList, id)
 	if todoItemList.ID == 0 {
 		return fmt.Errorf("there is no item to update with id=%v", id)
 	}
 
 	itemModel.ID = todoItemList.ID
 
-	s.db.Save(&itemModel)
+	s.DB.Save(&itemModel)
 	return nil
 }
 
 // mark item as deleted
 func (s *Service) Delete(id string) error {
 	var todoItemList model.ToDoItemList
-	s.db.Delete(&todoItemList, id)
+	s.DB.Delete(&todoItemList, id)
 
 	return nil
 }
