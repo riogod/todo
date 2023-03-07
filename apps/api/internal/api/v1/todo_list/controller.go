@@ -3,6 +3,7 @@ package todo_list
 import (
 	"fmt"
 	"net/http"
+	api_common "todo_api/internal/api/v1/common"
 	db_service "todo_api/internal/service/db"
 
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,7 @@ func get(s *db_service.Service) func(ctx *gin.Context) {
 			responseMap = append(responseMap, mappedItem)
 		}
 
-		ctx.JSON(http.StatusOK, ResponseOK_DTO{
+		ctx.JSON(http.StatusOK, api_common.ResponseOK_DTO{
 			Success: true,
 			Body:    responseMap,
 		})
@@ -57,9 +58,9 @@ func getById(s *db_service.Service) func(ctx *gin.Context) {
 		model, err := s.GetByID(id)
 		if err != nil {
 
-			ctx.JSON(http.StatusOK, ResponseERROR_DTO{
+			ctx.JSON(http.StatusOK, api_common.ResponseERROR_DTO{
 				Success: false,
-				Error: ResponseErrorDTO{
+				Error: api_common.ResponseErrorDTO{
 					ErrorCode:    "NOTHING_FOUND",
 					ErrorMessage: fmt.Sprintf("not found item with id=%v", id),
 				},
@@ -67,7 +68,7 @@ func getById(s *db_service.Service) func(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, ResponseOK_DTO{
+		ctx.JSON(http.StatusOK, api_common.ResponseOK_DTO{
 			Success: true,
 			Body: ResponseTodoListItemDTO{
 				ID:          fmt.Sprintf("%d", model.ID),
@@ -93,9 +94,9 @@ func create(s *db_service.Service) func(ctx *gin.Context) {
 		createParams.Status = requestParams.Status
 
 		if err != nil {
-			ctx.JSON(http.StatusOK, ResponseERROR_DTO{
+			ctx.JSON(http.StatusOK, api_common.ResponseERROR_DTO{
 				Success: false,
-				Error: ResponseErrorDTO{
+				Error: api_common.ResponseErrorDTO{
 					ErrorCode:    "UNABLE_TO_CREATE",
 					ErrorMessage: "Cannot insert new list item in db table",
 				},
@@ -104,7 +105,7 @@ func create(s *db_service.Service) func(ctx *gin.Context) {
 		}
 		createParams.ID = 0
 		s.Create(&createParams)
-		ctx.JSON(http.StatusOK, ResponseOK_DTO{
+		ctx.JSON(http.StatusOK, api_common.ResponseOK_DTO{
 			Success: true,
 			Body: ResponseTodoListItemDTO{
 				ID:          fmt.Sprintf("%d", createParams.ID),
@@ -137,16 +138,16 @@ func update(s *db_service.Service) func(ctx *gin.Context) {
 		err = s.Update(id, &updateParams)
 		if err != nil {
 
-			ctx.JSON(http.StatusOK, ResponseERROR_DTO{
+			ctx.JSON(http.StatusOK, api_common.ResponseERROR_DTO{
 				Success: false,
-				Error: ResponseErrorDTO{
+				Error: api_common.ResponseErrorDTO{
 					ErrorCode:    "NOTHING_TO_UPDATE",
 					ErrorMessage: fmt.Sprintf("not found item with id=%v for update", id),
 				},
 			})
 			return
 		}
-		ctx.JSON(http.StatusOK, ResponseOK_DTO{
+		ctx.JSON(http.StatusOK, api_common.ResponseOK_DTO{
 			Success: true,
 			Body: ResponseTodoListItemDTO{
 				ID:          fmt.Sprintf("%d", updateParams.ID),
@@ -168,7 +169,7 @@ func delete(s *db_service.Service) func(ctx *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		ctx.JSON(http.StatusOK, ResponseOK_DTO{
+		ctx.JSON(http.StatusOK, api_common.ResponseOK_DTO{
 			Success: true,
 			Body:    nil,
 		})
