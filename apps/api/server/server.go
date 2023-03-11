@@ -56,6 +56,7 @@ func NewAppInit() *App {
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
+		GetParam(),
 	)
 
 	repo := repository.InitRepositories(db)
@@ -136,4 +137,11 @@ func initDB(dbConfig DatabaseConfig) *gorm.DB {
 	db.AutoMigrate(&model.ToDoItemList{})
 	db.AutoMigrate(&model.ToDoItem{})
 	return db
+}
+
+func GetParam() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		c.Next()
+	}
 }

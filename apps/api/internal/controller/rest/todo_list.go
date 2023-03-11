@@ -30,7 +30,6 @@ func SetupTodoList(router *gin.RouterGroup, services *service.Service) {
 
 func (h *TodoListHandler) get() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		fmt.Println("Controller")
 		responseMap := h.service.TodoList.GetAllRecords()
 		ctx.JSON(http.StatusOK, ResponseOK_DTO{
 			Success: true,
@@ -105,7 +104,8 @@ func (h *TodoListHandler) update() func(ctx *gin.Context) {
 		var requestParams RequestTodoListDTO
 		err := ctx.BindJSON(&requestParams)
 		if err != nil {
-			fmt.Println("unable parse request json")
+			JSONError(ctx, "PARSE_JSON", "unable parse request json")
+			return
 		}
 
 		resp, err := h.service.TodoList.Update(id, requestParams.Title, requestParams.Description, requestParams.Status)

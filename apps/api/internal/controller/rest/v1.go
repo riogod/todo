@@ -11,6 +11,7 @@ func InitRestHandlers(router *gin.Engine, service *service.Service) gin.RouterGr
 	api := router.Group("/api")
 
 	SetupTodoList(api, service)
+	SetupTodoItem(api, service)
 
 	return router.RouterGroup
 }

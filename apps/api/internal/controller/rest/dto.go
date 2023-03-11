@@ -1,6 +1,8 @@
 package apiv1
 
-import "time"
+import (
+	"time"
+)
 
 type ResponseErrorDTO struct {
 	ErrorCode    string `json:"error_code"`
@@ -22,11 +24,28 @@ type RequestTodoListDTO struct {
 	Status      string `json:"status"`
 }
 
+type RequestTodoItemDTO struct {
+	Title       string `json:"title"`
+	ListID      string `json:"list_id"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
 type ResponseTodoListItemDTO struct {
 	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type ResponseTodoItemDTO struct {
+	ID          string                  `json:"id"`
+	List        ResponseTodoListItemDTO `json:"list"`
+	Title       string                  `json:"title"`
+	Description string                  `json:"description"`
+	Status      string                  `json:"status"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
