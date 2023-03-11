@@ -133,7 +133,7 @@ func initDB(dbConfig DatabaseConfig) *gorm.DB {
 		fmt.Println("error connect to database")
 	}
 
-	db.AutoMigrate(&model.ToDoItemList{})
+	db.AutoMigrate(&model.ToDoItemList{}, &model.ToDoItem{})
 
 	return db
 }
