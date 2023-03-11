@@ -9,7 +9,9 @@ import (
 	"os/signal"
 	"path/filepath"
 	"time"
-	apiv1 "todo_api/internal/api/v1"
+	apiv1 "todo_api/internal/controller/rest"
+	"todo_api/internal/repository"
+	"todo_api/internal/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -56,7 +58,9 @@ func NewAppInit() *App {
 		gin.Logger(),
 	)
 
-	apiv1.Setup(router, db)
+	repo := repository.InitRepositories(db)
+	services := service.InitServices(repo)
+	apiv1.InitRestHandlers(router, services)
 
 	return &App{
 		Config: config,
