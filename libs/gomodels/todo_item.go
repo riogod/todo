@@ -8,7 +8,8 @@ import (
 
 type ToDoItem struct {
 	ID          uint64       `gorm:"primary_key;column:id;"     json:"id"`
-	List        ToDoItemList `gorm:"foreignKey:id;references:list_id"`
+	List        ToDoItemList `gorm:"foreignKey:ListID;"`
+	ListID      uint64       `json:"list_id"`
 	Title       string       `gorm:"column:title;type:text"                json:"title"`
 	Description string       `gorm:"column:description;type:text"          json:"description"`
 	Status      string       `gorm:"column:status;type:text"               json:"status"`
