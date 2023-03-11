@@ -25,7 +25,7 @@ func (r *TodoListRepository) GetAll(m *[]model.ToDoItemList) error {
 }
 
 // get item by id from database
-func (r *TodoListRepository) GetByID(id string) (*model.ToDoItemList, error) {
+func (r *TodoListRepository) GetByID(id uint64) (*model.ToDoItemList, error) {
 	var todoItemList model.ToDoItemList
 
 	r.DB.First(&todoItemList, id)
@@ -43,7 +43,7 @@ func (r *TodoListRepository) Create(itemModel *model.ToDoItemList) (*model.ToDoI
 }
 
 // update item in database
-func (r *TodoListRepository) Update(id string, itemModel *model.ToDoItemList) (*model.ToDoItemList, error) {
+func (r *TodoListRepository) Update(id uint64, itemModel *model.ToDoItemList) (*model.ToDoItemList, error) {
 	var todoItemList model.ToDoItemList
 
 	r.DB.First(&todoItemList, id)
@@ -58,7 +58,7 @@ func (r *TodoListRepository) Update(id string, itemModel *model.ToDoItemList) (*
 }
 
 // mark item as deleted
-func (r *TodoListRepository) Delete(id string) error {
+func (r *TodoListRepository) Delete(id uint64) error {
 	var todoItemList model.ToDoItemList
 	r.DB.Delete(&todoItemList, id)
 

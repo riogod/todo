@@ -45,7 +45,7 @@ func (t *TodoItemService) GetAllByListID(list_id uint64) error {
 }
 
 func (t *TodoItemService) Create(list_id uint64, title string, description string, status string) (*model.ToDoItem, error) {
-	getList, err := t.repository.TodoList.GetByID(fmt.Sprintf("%d", list_id))
+	getList, err := t.repository.TodoList.GetByID(list_id)
 	if err != nil {
 		return nil, fmt.Errorf("cannot find list with id=%d", list_id)
 	}
@@ -77,7 +77,7 @@ func (t *TodoItemService) Update(id uint64, list_id string, title string, descri
 			return nil, fmt.Errorf("list_id must be an number ")
 		}
 
-		listModel, listModelErr := t.repository.TodoList.GetByID(fmt.Sprintf("%d", idList))
+		listModel, listModelErr := t.repository.TodoList.GetByID(idList)
 		if listModelErr != nil {
 			return nil, fmt.Errorf("cannot find list with id=%d", idList)
 		}

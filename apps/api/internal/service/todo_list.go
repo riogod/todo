@@ -52,7 +52,7 @@ func (t *TodoListService) GetAllRecords() *[]ResponseTodoListItemDTO {
 	return &responseMap
 }
 
-func (t *TodoListService) GetByID(id string) (*model.ToDoItemList, error) {
+func (t *TodoListService) GetByID(id uint64) (*model.ToDoItemList, error) {
 
 	return t.repository.TodoList.GetByID(id)
 }
@@ -66,7 +66,7 @@ func (t *TodoListService) Create(title string, description string, status string
 	})
 }
 
-func (t *TodoListService) Update(id string, title string, description string, status string) (*model.ToDoItemList, error) {
+func (t *TodoListService) Update(id uint64, title string, description string, status string) (*model.ToDoItemList, error) {
 	updateParams := model.ToDoItemList{
 		ID:          0,
 		Title:       title,
@@ -77,7 +77,7 @@ func (t *TodoListService) Update(id string, title string, description string, st
 	return t.repository.TodoList.Update(id, &updateParams)
 }
 
-func (t *TodoListService) Delete(id string) error {
+func (t *TodoListService) Delete(id uint64) error {
 
 	return t.repository.TodoList.Delete(id)
 }

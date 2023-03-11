@@ -3,6 +3,7 @@ package apiv1
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"todo_api/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,13 @@ func (h *TodoListHandler) get() func(ctx *gin.Context) {
 
 func (h *TodoListHandler) getById() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+		idItem := ctx.Param("id")
+		id, err := strconv.ParseUint(idItem, 10, 64)
+		if err != nil {
+			JSONError(ctx, "MUST_BE_INT", "list id in path must be an number ")
+			return
+		}
+
 		model, err := h.service.TodoList.GetByID(id)
 		if err != nil {
 
@@ -99,10 +106,15 @@ func (h *TodoListHandler) create() func(ctx *gin.Context) {
 
 func (h *TodoListHandler) update() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
+		idItem := ctx.Param("id")
+		id, err := strconv.ParseUint(idItem, 10, 64)
+		if err != nil {
+			JSONError(ctx, "MUST_BE_INT", "list id in path must be an number ")
+			return
+		}
 
 		var requestParams RequestTodoListDTO
-		err := ctx.BindJSON(&requestParams)
+		err = ctx.BindJSON(&requestParams)
 		if err != nil {
 			JSONError(ctx, "PARSE_JSON", "unable parse request json")
 			return
@@ -131,8 +143,13 @@ func (h *TodoListHandler) update() func(ctx *gin.Context) {
 
 func (h *TodoListHandler) delete() func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		err := h.service.TodoList.Delete(id)
+		idItem := ctx.Param("id")
+		id, err := strconv.ParseUint(idItem, 10, 64)
+		if err != nil {
+			JSONError(ctx, "MUST_BE_INT", "list id in path must be an number ")
+			return
+		}
+		err = h.service.TodoList.Delete(id)
 		if err != nil {
 			JSONError(ctx, "CANNOT_DELETE", fmt.Sprintf("cannot delete item with id=%v", id))
 			return
