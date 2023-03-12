@@ -19,10 +19,11 @@ type RequestTodoListDTO struct {
 }
 
 type ResponseTodoListItemDTO struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+	ID          string                `json:"id"`
+	Title       string                `json:"title"`
+	Description string                `json:"description"`
+	Status      string                `json:"status"`
+	Items       *[]RequestTodoItemDTO `json:"items"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -52,7 +53,7 @@ func (t *TodoListService) GetAllRecords() *[]ResponseTodoListItemDTO {
 	return &responseMap
 }
 
-func (t *TodoListService) GetByID(id uint64) (*model.ToDoItemList, error) {
+func (t *TodoListService) GetByID(id uint64) (*repository.ToDoItemList, error) {
 
 	return t.repository.TodoList.GetByID(id)
 }

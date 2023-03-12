@@ -2,6 +2,8 @@ package apiv1
 
 import (
 	"time"
+
+	model "github.com/riogod/todo/libs/gomodels"
 )
 
 type ResponseErrorDTO struct {
@@ -32,10 +34,11 @@ type RequestTodoItemDTO struct {
 }
 
 type ResponseTodoListItemDTO struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+	ID          string            `json:"id"`
+	Items       *[]model.ToDoItem `json:"items"`
+	Title       string            `json:"title"`
+	Description string            `json:"description"`
+	Status      string            `json:"status"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

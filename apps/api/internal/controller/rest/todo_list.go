@@ -66,6 +66,7 @@ func (h *TodoListHandler) getById() func(ctx *gin.Context) {
 			Body: ResponseTodoListItemDTO{
 				ID:          fmt.Sprintf("%d", model.ID),
 				Title:       model.Title,
+				Items:       model.Items,
 				Description: model.Description,
 				Status:      model.Status,
 				CreatedAt:   model.CreatedAt,

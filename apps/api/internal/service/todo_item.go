@@ -49,9 +49,19 @@ func (t *TodoItemService) Create(list_id uint64, title string, description strin
 	if err != nil {
 		return nil, fmt.Errorf("cannot find list with id=%d", list_id)
 	}
+
+	listItem := model.ToDoItemList{
+		ID:          getList.ID,
+		Title:       getList.Title,
+		Description: getList.Description,
+		Status:      getList.Status,
+		CreatedAt:   getList.CreatedAt,
+		UpdatedAt:   getList.UpdatedAt,
+	}
+
 	model := &model.ToDoItem{
 		ID:          0,
-		List:        *getList,
+		List:        listItem,
 		Title:       title,
 		Description: description,
 		Status:      status,
@@ -65,7 +75,7 @@ func (t *TodoItemService) Create(list_id uint64, title string, description strin
 }
 
 func (t *TodoItemService) Update(id uint64, list_id string, title string, description string, status string) (*model.ToDoItem, error) {
-	model, err := t.repository.TodoItem.GetById(id)
+	modelItem, err := t.repository.TodoItem.GetById(id)
 	if err != nil {
 		return nil, fmt.Errorf("not found item with id=%d", id)
 	}
@@ -81,22 +91,29 @@ func (t *TodoItemService) Update(id uint64, list_id string, title string, descri
 		if listModelErr != nil {
 			return nil, fmt.Errorf("cannot find list with id=%d", idList)
 		}
-		model.List = *listModel
-		model.ListID = idList
+		modelItem.List = model.ToDoItemList{
+			ID:          listModel.ID,
+			Title:       listModel.Title,
+			Description: listModel.Description,
+			Status:      listModel.Status,
+			CreatedAt:   listModel.CreatedAt,
+			UpdatedAt:   listModel.UpdatedAt,
+		}
+		modelItem.ListID = idList
 	}
 	if title != "" {
-		model.Title = title
+		modelItem.Title = title
 	}
 	if description != "" {
-		model.Description = description
+		modelItem.Description = description
 	}
 	if status != "" {
-		model.Status = status
+		modelItem.Status = status
 	}
 
-	t.repository.TodoItem.Update(model)
+	t.repository.TodoItem.Update(modelItem)
 
-	return model, nil
+	return modelItem, nil
 }
 
 func (t *TodoItemService) Delete(id uint64) error {

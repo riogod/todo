@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"time"
 
 	model "github.com/riogod/todo/libs/gomodels"
 	"gorm.io/gorm"
@@ -9,6 +10,16 @@ import (
 
 type TodoListRepository struct {
 	DB *gorm.DB
+}
+
+type ToDoItemList struct {
+	ID          uint64
+	Items       *[]model.ToDoItem
+	Title       string
+	Description string
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func NewTodoListRepository(db *gorm.DB) *TodoListRepository {
@@ -25,14 +36,28 @@ func (r *TodoListRepository) GetAll(m *[]model.ToDoItemList) error {
 }
 
 // get item by id from database
-func (r *TodoListRepository) GetByID(id uint64) (*model.ToDoItemList, error) {
+func (r *TodoListRepository) GetByID(id uint64) (*ToDoItemList, error) {
 	var todoItemList model.ToDoItemList
 
 	r.DB.First(&todoItemList, id)
 	if todoItemList.ID == 0 {
 		return nil, fmt.Errorf("no item in todo list table")
 	}
-	return &todoItemList, nil
+
+	items := []model.ToDoItem{}
+	r.DB.Model(&model.ToDoItem{
+		List: todoItemList,
+	}).Find(&items)
+
+	return &ToDoItemList{
+		ID:          todoItemList.ID,
+		Items:       &items,
+		Title:       todoItemList.Title,
+		Description: todoItemList.Description,
+		Status:      todoItemList.Status,
+		CreatedAt:   todoItemList.CreatedAt,
+		UpdatedAt:   todoItemList.UpdatedAt,
+	}, nil
 }
 
 // create new item in database
