@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"time"
-	apiv1 "todo_api/internal/api/v1"
+	api "todo_api/internal/api/v1"
 	"todo_api/internal/middleware"
 	"todo_api/internal/repository"
 	"todo_api/internal/types"
@@ -60,7 +60,7 @@ func NewAppInit() *App {
 		middleware.ErrorHandler(),
 	)
 
-	apiv1.InitRestHandlers(router, &types.Service{
+	api.InitRestHandlers(router, &types.Service{
 		Repository: repository.Setup(db),
 	})
 
