@@ -1,6 +1,6 @@
 package main
 
-import "todo_api/server"
+import "todo_api/internal/server"
 
 func main() {
 	app := server.NewAppInit()

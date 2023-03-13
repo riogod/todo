@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	service_error "todo_api/internal/service_errors"
 
 	model "github.com/riogod/todo/libs/gomodels"
 	"gorm.io/gorm"
@@ -21,30 +22,57 @@ func (r *TodoItemRepository) GetById(id uint64) (*model.ToDoItem, error) {
 	var todoItem model.ToDoItem
 
 	r.DB.First(&todoItem, id)
-	r.DB.First(&todoItem.List, todoItem.ListID)
 
 	if todoItem.ID == 0 {
-		return nil, fmt.Errorf("no item in todo list table")
+		return nil, service_error.ServiceError("NOT_FOUND", "no item in todo list table")
 	}
 	return &todoItem, nil
 }
 
-func (r *TodoItemRepository) GetAllByListID(id uint64) error {
-	return fmt.Errorf("not implemented")
+func (r *TodoItemRepository) GetAllBy(key string, value any) (*[]model.ToDoItem, error) {
+	var items []model.ToDoItem
+
+	search := r.DB.Where(fmt.Sprintf("%s = ?", key), value).Find(&items)
+	return &items, service_error.ServiceError("DB_ERROR", search.Error.Error())
 }
 
-func (r *TodoItemRepository) Create(m *model.ToDoItem) error {
-	r.DB.Create(m)
-	return nil
+func (r *TodoItemRepository) Create(list_id uint64, title string, description string, status string) (*model.ToDoItem, error) {
+
+	model := model.ToDoItem{
+		ID:          0,
+		ListID:      list_id,
+		Title:       title,
+		Description: description,
+		Status:      status,
+	}
+
+	create := r.DB.Create(&model)
+	if create.Error != nil {
+		return nil, service_error.ServiceError("DB_ERROR", create.Error.Error())
+	}
+
+	return &model, nil
 }
 
-func (r *TodoItemRepository) Update(m *model.ToDoItem) error {
-	r.DB.Save(&m)
-	return nil
+func (r *TodoItemRepository) Update(id uint64, fields map[string]interface{}) (*model.ToDoItem, error) {
+	var updatingItemModel model.ToDoItem
+
+	upd := r.DB.Model(&updatingItemModel).Where("id = ?", id).Updates(fields)
+	if upd.Error != nil {
+		return nil, service_error.ServiceError("DB_ERROR", upd.Error.Error())
+	}
+
+	// Обновляем модель актуальными данными из базы
+	var updatedModel model.ToDoItem
+	r.DB.First(&updatedModel, id)
+
+	return &updatedModel, nil
 }
 
 func (r *TodoItemRepository) Delete(id uint64) error {
-	var todoItem model.ToDoItem
-	r.DB.Delete(&todoItem, id)
+	err := r.DB.Delete(&model.ToDoItem{}, id)
+	if err.Error != nil {
+		return service_error.ServiceError("DB_ERROR", err.Error.Error())
+	}
 	return nil
 }

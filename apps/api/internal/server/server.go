@@ -9,9 +9,10 @@ import (
 	"os/signal"
 	"path/filepath"
 	"time"
-	apiv1 "todo_api/internal/controller/rest"
+	apiv1 "todo_api/internal/api/v1"
+	"todo_api/internal/middleware"
 	"todo_api/internal/repository"
-	"todo_api/internal/service"
+	"todo_api/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -56,12 +57,12 @@ func NewAppInit() *App {
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
-		GetParam(),
+		middleware.ErrorHandler(),
 	)
 
-	repo := repository.InitRepositories(db)
-	services := service.InitServices(repo)
-	apiv1.InitRestHandlers(router, services)
+	apiv1.InitRestHandlers(router, &types.Service{
+		Repository: repository.Setup(db),
+	})
 
 	return &App{
 		Config: config,
@@ -137,11 +138,4 @@ func initDB(dbConfig DatabaseConfig) *gorm.DB {
 	db.AutoMigrate(&model.ToDoItemList{})
 	db.AutoMigrate(&model.ToDoItem{})
 	return db
-}
-
-func GetParam() gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		c.Next()
-	}
 }

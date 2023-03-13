@@ -3,6 +3,7 @@ module todo_api
 go 1.20
 
 require (
+	github.com/faceair/jio v1.0.1
 	github.com/gin-gonic/gin v1.9.0
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -42,3 +43,5 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/riogod/todo/libs/gomodels => ../../libs/gomodels

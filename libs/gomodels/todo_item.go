@@ -7,12 +7,11 @@ import (
 )
 
 type ToDoItem struct {
-	ID          uint64       `gorm:"primary_key;column:id;"     json:"id"`
-	List        ToDoItemList `gorm:"foreignKey:ListID;"`
-	ListID      uint64       `json:"list_id"`
-	Title       string       `gorm:"column:title;type:text"                json:"title"`
-	Description string       `gorm:"column:description;type:text"          json:"description"`
-	Status      string       `gorm:"column:status;type:text"               json:"status"`
+	ID          uint64 `gorm:"primary_key;column:id;"`
+	ListID      uint64 `json:"list_id"`
+	Title       string `gorm:"column:title;type:text"`
+	Description string `gorm:"column:description;type:text"`
+	Status      string `gorm:"column:status;type:text"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
