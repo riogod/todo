@@ -18,27 +18,27 @@ func NewTodoItemRepository(db *gorm.DB) *TodoItemRepository {
 	}
 }
 
-func (r *TodoItemRepository) GetById(id uint64) (*model.ToDoItem, error) {
-	var todoItem model.ToDoItem
+func (r *TodoItemRepository) GetById(id uint64) (*model.TodoItem, error) {
+	var todoItem model.TodoItem
 
 	r.DB.First(&todoItem, id)
 
 	if todoItem.ID == 0 {
-		return nil, service_error.ServiceError("NOT_FOUND", "no item in todo list table")
+		return nil, service_error.ServiceError("NOT_FOUND", "not found item with this id")
 	}
 	return &todoItem, nil
 }
 
-func (r *TodoItemRepository) GetAllBy(key string, value any) (*[]model.ToDoItem, error) {
-	var items []model.ToDoItem
+func (r *TodoItemRepository) GetAllBy(key string, value any) (*[]model.TodoItem, error) {
+	var items []model.TodoItem
 
 	search := r.DB.Where(fmt.Sprintf("%s = ?", key), value).Find(&items)
 	return &items, service_error.ServiceError("DB_ERROR", search.Error.Error())
 }
 
-func (r *TodoItemRepository) Create(list_id uint64, title string, description string, status string) (*model.ToDoItem, error) {
+func (r *TodoItemRepository) Create(list_id uint64, title string, description string, status string) (*model.TodoItem, error) {
 
-	model := model.ToDoItem{
+	model := model.TodoItem{
 		ID:          0,
 		ListID:      list_id,
 		Title:       title,
@@ -54,8 +54,8 @@ func (r *TodoItemRepository) Create(list_id uint64, title string, description st
 	return &model, nil
 }
 
-func (r *TodoItemRepository) Update(id uint64, fields map[string]interface{}) (*model.ToDoItem, error) {
-	var updatingItemModel model.ToDoItem
+func (r *TodoItemRepository) Update(id uint64, fields map[string]interface{}) (*model.TodoItem, error) {
+	var updatingItemModel model.TodoItem
 
 	upd := r.DB.Model(&updatingItemModel).Where("id = ?", id).Updates(fields)
 	if upd.Error != nil {
@@ -63,14 +63,14 @@ func (r *TodoItemRepository) Update(id uint64, fields map[string]interface{}) (*
 	}
 
 	// Обновляем модель актуальными данными из базы
-	var updatedModel model.ToDoItem
+	var updatedModel model.TodoItem
 	r.DB.First(&updatedModel, id)
 
 	return &updatedModel, nil
 }
 
 func (r *TodoItemRepository) Delete(id uint64) error {
-	err := r.DB.Delete(&model.ToDoItem{}, id)
+	err := r.DB.Delete(&model.TodoItem{}, id)
 	if err.Error != nil {
 		return service_error.ServiceError("DB_ERROR", err.Error.Error())
 	}

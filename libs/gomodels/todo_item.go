@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ToDoItem struct {
+type TodoItem struct {
 	ID          uint64 `gorm:"primary_key;column:id;"`
 	ListID      uint64 `json:"list_id"`
 	Title       string `gorm:"column:title;type:text"`
@@ -17,6 +17,6 @@ type ToDoItem struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
-func (t *ToDoItem) TableName() string {
+func (t *TodoItem) TableName() string {
 	return "todo_item"
 }
