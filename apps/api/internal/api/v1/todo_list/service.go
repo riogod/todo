@@ -2,6 +2,7 @@ package todo_list
 
 import (
 	"fmt"
+	"todo_api/internal/api/v1/todo_item"
 	"todo_api/internal/repository"
 	"todo_api/internal/types"
 )
@@ -16,14 +17,34 @@ func SetupService(service *types.Service) *TodoListService {
 	}
 }
 
-func (h *TodoListService) GetByID(id uint64) (*TodoList, error) {
+func (h *TodoListService) GetByID(id uint64) (*TodoListWithItems, error) {
 	model, okModel := h.repository.TodoList.GetByID(id)
 	if okModel != nil {
 		return nil, okModel
 	}
 
-	return &TodoList{
+	responseItems := []todo_item.TodoItem{}
+
+	itemsModel, okItemsModel := h.repository.TodoItem.GetAllBy("list_id", id)
+	if okItemsModel != nil {
+		return nil, okItemsModel
+	}
+
+	for _, item := range *itemsModel {
+		responseItems = append(responseItems, todo_item.TodoItem{
+			ID:          fmt.Sprintf("%d", item.ID),
+			ListID:      fmt.Sprintf("%d", item.ListID),
+			Title:       item.Title,
+			Description: item.Description,
+			Status:      item.Status,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		})
+	}
+
+	return &TodoListWithItems{
 		ID:          fmt.Sprintf("%d", model.ID),
+		Items:       &responseItems,
 		Title:       model.Title,
 		Description: model.Description,
 		Status:      model.Status,

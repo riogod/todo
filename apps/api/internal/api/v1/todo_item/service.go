@@ -33,29 +33,6 @@ func (h *TodoItemService) GetByID(id uint64) (*TodoItem, error) {
 	}, nil
 }
 
-func (h *TodoItemService) GetAllByListID(key string, value any) (*[]TodoItem, error) {
-	var response []TodoItem
-
-	model, okModel := h.repository.TodoItem.GetAllBy(key, value)
-	if okModel != nil {
-		return nil, okModel
-	}
-
-	for _, item := range *model {
-		response = append(response, TodoItem{
-			ID:          fmt.Sprintf("%d", item.ID),
-			ListID:      fmt.Sprintf("%d", item.ListID),
-			Title:       item.Title,
-			Description: item.Description,
-			Status:      item.Status,
-			CreatedAt:   item.CreatedAt,
-			UpdatedAt:   item.UpdatedAt,
-		})
-	}
-
-	return &response, nil
-}
-
 func (h *TodoItemService) Create(list_id uint64, title string, description string, status string) (*TodoItem, error) {
 
 	model, okModel := h.repository.TodoItem.Create(list_id, title, description, status)

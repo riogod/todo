@@ -33,7 +33,10 @@ func (r *TodoItemRepository) GetAllBy(key string, value any) (*[]model.TodoItem,
 	var items []model.TodoItem
 
 	search := r.DB.Where(fmt.Sprintf("%s = ?", key), value).Find(&items)
-	return &items, service_error.ServiceError("DB_ERROR", search.Error.Error())
+	if search.Error != nil {
+		return nil, service_error.ServiceError("DB_ERROR", search.Error.Error())
+	}
+	return &items, nil
 }
 
 func (r *TodoItemRepository) Create(list_id uint64, title string, description string, status string) (*model.TodoItem, error) {
