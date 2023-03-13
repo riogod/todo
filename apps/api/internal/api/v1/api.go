@@ -2,6 +2,7 @@ package api
 
 import (
 	"todo_api/internal/api/v1/todo_item"
+	"todo_api/internal/api/v1/todo_list"
 	"todo_api/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,7 @@ func InitRestHandlers(router *gin.Engine, service *types.Service) gin.RouterGrou
 	api := router.Group("/api")
 
 	todo_item.Setup(api, service)
+	todo_list.Setup(api, service)
 
 	return router.RouterGroup
 }

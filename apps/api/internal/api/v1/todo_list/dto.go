@@ -1,10 +1,9 @@
-package todo_item
+package todo_list
 
 import "time"
 
-type TodoItem struct {
+type TodoList struct {
 	ID          string    `json:"id"`
-	ListID      string    `json:"list_id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      string    `json:"status"`
@@ -12,9 +11,8 @@ type TodoItem struct {
 	UpdatedAt   time.Time `json:"update_at"`
 }
 
-type RequestTodoItemDTO struct {
+type RequestTodoListDTO struct {
 	Title       string `json:"title"`
-	ListID      string `json:"list_id"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
 }
