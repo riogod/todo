@@ -91,3 +91,13 @@ func (r *TodoItemRepository) Delete(id uint64) error {
 	}
 	return nil
 }
+
+// search all items in TodoItem where title kind of like '%title%' and preloaded List
+func (r *TodoItemRepository) Search(title string) (*[]model.TodoItem, error) {
+	var items []model.TodoItem
+	search := r.DB.Preload("List").Where("title like ?", "%"+title+"%").Find(&items)
+	if search.Error != nil {
+		return nil, service_error.ServiceError("DB_ERROR", search.Error.Error())
+	}
+	return &items, nil
+}

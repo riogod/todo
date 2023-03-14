@@ -17,6 +17,7 @@ func Setup(router *gin.RouterGroup, services *types.Service) {
 	todo := router.Group("/todo")
 	{
 		todo.GET("/:id", middleware.ValidateIdInQuery(), getById(service))
+		todo.GET("/", search(service))
 		todo.POST("", middleware.ValidatePOSTBody(RequestBodyCreateSchema), create(service))
 		todo.PATCH(":id", middleware.ValidateIdInQuery(), middleware.ValidatePOSTBody(RequestBodyUpdateSchema), update(service))
 		todo.DELETE(":id", middleware.ValidateIdInQuery(), delete(service))
@@ -113,5 +114,20 @@ func delete(s *TodoItemService) func(ctx *gin.Context) {
 			Body:    nil,
 		})
 
+	}
+}
+
+func search(s *TodoItemService) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		title := ctx.Query("title")
+		response, okResponse := s.Search(title)
+		if okResponse != nil {
+			ctx.Error(okResponse)
+			return
+		}
+		ctx.JSON(http.StatusOK, ResponoseDTO{
+			Success: true,
+			Body:    response,
+		})
 	}
 }

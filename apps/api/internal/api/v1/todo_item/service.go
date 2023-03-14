@@ -92,3 +92,32 @@ func (h *TodoItemService) Update(id uint64, fields map[string]interface{}) (*Tod
 func (h *TodoItemService) Delete(id uint64) error {
 	return h.repository.TodoItem.Delete(id)
 }
+
+func (h *TodoItemService) Search(title string) (*[]TodoItem, error) {
+	var response []TodoItem
+	model, okModel := h.repository.TodoItem.Search(title)
+	if okModel != nil {
+		return nil, okModel
+	}
+
+	for _, item := range *model {
+		response = append(response, TodoItem{
+			ID: fmt.Sprintf("%d", item.ID),
+			List: TodoList{
+				ID:          fmt.Sprintf("%d", item.List.ID),
+				Title:       item.List.Title,
+				Description: item.List.Description,
+				Status:      item.List.Status,
+				CreatedAt:   item.List.CreatedAt,
+				UpdatedAt:   item.List.UpdatedAt,
+			},
+			Title:       item.Title,
+			Description: item.Description,
+			Status:      item.Status,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		})
+	}
+	return &response, nil
+
+}
