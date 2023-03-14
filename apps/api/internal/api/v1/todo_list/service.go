@@ -2,7 +2,6 @@ package todo_list
 
 import (
 	"fmt"
-	"todo_api/internal/api/v1/todo_item"
 	"todo_api/internal/repository"
 	"todo_api/internal/types"
 )
@@ -23,15 +22,10 @@ func (h *TodoListService) GetByID(id uint64) (*TodoListWithItems, error) {
 		return nil, okModel
 	}
 
-	responseItems := []todo_item.TodoItem{}
+	responseItems := []TodoItem{}
 
-	itemsModel, okItemsModel := h.repository.TodoItem.GetAllBy("list_id", id)
-	if okItemsModel != nil {
-		return nil, okItemsModel
-	}
-
-	for _, item := range *itemsModel {
-		responseItems = append(responseItems, todo_item.TodoItem{
+	for _, item := range model.Items {
+		responseItems = append(responseItems, TodoItem{
 			ID:          fmt.Sprintf("%d", item.ID),
 			ListID:      fmt.Sprintf("%d", item.ListID),
 			Title:       item.Title,
@@ -51,6 +45,40 @@ func (h *TodoListService) GetByID(id uint64) (*TodoListWithItems, error) {
 		CreatedAt:   model.CreatedAt,
 		UpdatedAt:   model.UpdatedAt,
 	}, nil
+}
+
+func (h *TodoListService) GetAllWithItems() (*[]TodoListWithItems, error) {
+	var response []TodoListWithItems
+
+	model := h.repository.TodoList.GetAllWithItems()
+
+	for _, list := range *model {
+		responseItems := []TodoItem{}
+		for _, item := range list.Items {
+
+			responseItems = append(responseItems, TodoItem{
+				ID:          fmt.Sprintf("%d", item.ID),
+				ListID:      fmt.Sprintf("%d", item.ListID),
+				Title:       item.Title,
+				Description: item.Description,
+				Status:      item.Status,
+				CreatedAt:   item.CreatedAt,
+				UpdatedAt:   item.UpdatedAt,
+			})
+		}
+
+		response = append(response, TodoListWithItems{
+			ID:          fmt.Sprintf("%d", list.ID),
+			Title:       list.Title,
+			Items:       &responseItems,
+			Description: list.Description,
+			Status:      list.Status,
+			CreatedAt:   list.CreatedAt,
+			UpdatedAt:   list.UpdatedAt,
+		})
+	}
+
+	return &response, nil
 }
 
 func (h *TodoListService) GetAll() (*[]TodoList, error) {

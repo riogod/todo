@@ -15,6 +15,7 @@ func Setup(router *gin.RouterGroup, services *types.Service) {
 	todo := router.Group("/todo/list")
 	{
 		todo.GET("/:id", middleware.ValidateIdInQuery(), getById(service))
+		todo.GET("/all", getAllWithItems(service))
 		todo.GET("", getAll(service))
 		todo.POST("", middleware.ValidatePOSTBody(RequestBodyCreateSchema), create(service))
 		todo.PATCH(":id", middleware.ValidateIdInQuery(), middleware.ValidatePOSTBody(RequestBodyUpdateSchema), update(service))
@@ -45,6 +46,22 @@ func getAll(s *TodoListService) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 
 		response, okResponse := s.GetAll()
+		if okResponse != nil {
+			ctx.Error(okResponse)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, ResponoseDTO{
+			Success: true,
+			Body:    *response,
+		})
+	}
+}
+
+func getAllWithItems(s *TodoListService) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+
+		response, okResponse := s.GetAllWithItems()
 		if okResponse != nil {
 			ctx.Error(okResponse)
 			return

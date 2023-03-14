@@ -25,12 +25,19 @@ func (r *TodoListRepository) GetAll() *[]model.TodoList {
 	return &models
 }
 
+// get items list from database
+func (r *TodoListRepository) GetAllWithItems() *[]model.TodoList {
+	var models []model.TodoList
+
+	r.DB.Preload("Items").Find(&models)
+	return &models
+}
+
 // get item by id from database
 func (r *TodoListRepository) GetByID(id uint64) (*model.TodoList, error) {
 	var todoList model.TodoList
 
-	r.DB.First(&todoList, id)
-
+	r.DB.Preload("Items").Where("id = ?", id).Find(&todoList)
 	if todoList.ID == 0 {
 		return nil, service_error.ServiceError("NOT_FOUND", "not found item with this id")
 	}

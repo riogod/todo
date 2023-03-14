@@ -23,8 +23,15 @@ func (h *TodoItemService) GetByID(id uint64) (*TodoItem, error) {
 	}
 
 	return &TodoItem{
-		ID:          fmt.Sprintf("%d", model.ID),
-		ListID:      fmt.Sprintf("%d", model.ListID),
+		ID: fmt.Sprintf("%d", model.ID),
+		List: TodoList{
+			ID:          fmt.Sprintf("%d", model.List.ID),
+			Title:       model.List.Title,
+			Description: model.List.Description,
+			Status:      model.List.Status,
+			CreatedAt:   model.List.CreatedAt,
+			UpdatedAt:   model.List.UpdatedAt,
+		},
 		Title:       model.Title,
 		Description: model.Description,
 		Status:      model.Status,
@@ -37,12 +44,19 @@ func (h *TodoItemService) Create(list_id uint64, title string, description strin
 
 	model, okModel := h.repository.TodoItem.Create(list_id, title, description, status)
 	if okModel != nil {
-		return nil, fmt.Errorf("cannot create item")
+		return nil, okModel
 	}
 
 	return &TodoItem{
-		ID:          fmt.Sprintf("%d", model.ID),
-		ListID:      fmt.Sprintf("%d", model.ListID),
+		ID: fmt.Sprintf("%d", model.ID),
+		List: TodoList{
+			ID:          fmt.Sprintf("%d", model.List.ID),
+			Title:       model.List.Title,
+			Description: model.List.Description,
+			Status:      model.List.Status,
+			CreatedAt:   model.List.CreatedAt,
+			UpdatedAt:   model.List.UpdatedAt,
+		},
 		Title:       model.Title,
 		Description: model.Description,
 		Status:      model.Status,
@@ -56,11 +70,18 @@ func (h *TodoItemService) Update(id uint64, fields map[string]interface{}) (*Tod
 	if okModel != nil {
 		return nil, okModel
 	}
-
+	fmt.Println(model)
 	return &TodoItem{
-		ID:          fmt.Sprintf("%d", model.ID),
-		ListID:      fmt.Sprintf("%d", model.ListID),
-		Title:       model.Title,
+		ID:    fmt.Sprintf("%d", model.ID),
+		Title: model.Title,
+		List: TodoList{
+			ID:          fmt.Sprintf("%d", model.List.ID),
+			Title:       model.List.Title,
+			Description: model.List.Description,
+			Status:      model.List.Status,
+			CreatedAt:   model.List.CreatedAt,
+			UpdatedAt:   model.List.UpdatedAt,
+		},
 		Description: model.Description,
 		Status:      model.Status,
 		CreatedAt:   model.CreatedAt,
